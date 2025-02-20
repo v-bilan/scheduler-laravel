@@ -29,7 +29,7 @@
                       <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                       <x-nav-link href="{{route('scheduler')}}" :active="Route::is('scheduler')">{{ __('Scheduler')}}</x-nav-link>
                       <x-nav-link href="{{route('witnesses')}}" :active="Route::is('witnesses')">{{ __('Witnesses')}}</x-nav-link>
-                      <x-nav-link href="{{route('roles')}}" :active="Route::is('roles')">{{ __('Roles')}}</x-nav-link>
+                      <x-nav-link href="{{route('role.index')}}" :active="Route::is('role.index')">{{ __('Roles')}}</x-nav-link>
                       <x-nav-link href="{{route('about')}}" :active="Route::is('about')">{{ __('About')}}</x-nav-link>
                     </div>
                   </div>
@@ -59,7 +59,7 @@
                 <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                 <x-nav-link href="{{route('scheduler')}}" :mobile="true" :active="Route::is('scheduler')">{{ __('Scheduler')}}</x-nav-link>
                 <x-nav-link href="{{route('witnesses')}}" :mobile="true" :active="Route::is('witnesses')">{{ __('Witnesses')}}</x-nav-link>
-                <x-nav-link href="{{route('roles')}}" :mobile="true" :active="Route::is('roles')">{{ __('Roles')}}</x-nav-link>
+                <x-nav-link href="{{route('role.index')}}" :mobile="true" :active="Route::is('role.index')">{{ __('Roles')}}</x-nav-link>
                 <x-nav-link href="{{route('about')}}" :mobile="true" :active="Route::is('about')">{{ __('About')}}</x-nav-link>
               </div>
             </div>
@@ -70,6 +70,11 @@
               <h1 class="text-3xl font-bold tracking-tight text-gray-900">{{ $title ?? ''}}</h1>
             </div>
           </header>
+        @if(session('success'))
+            <div class="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                {{ session('success') }}
+            </div>
+        @endif
           <main>
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
               {{ $slot }}
