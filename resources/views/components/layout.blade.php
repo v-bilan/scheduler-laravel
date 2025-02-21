@@ -28,7 +28,7 @@
                     <div class="ml-10 flex items-baseline space-x-4">
                       <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                       <x-nav-link href="{{route('scheduler')}}" :active="Route::is('scheduler')">{{ __('Scheduler')}}</x-nav-link>
-                      <x-nav-link href="{{route('witnesses')}}" :active="Route::is('witnesses')">{{ __('Witnesses')}}</x-nav-link>
+                      <x-nav-link href="{{route('witness.index')}}" :active="Route::is('witness.index')">{{ __('Witnesses')}}</x-nav-link>
                       <x-nav-link href="{{route('role.index')}}" :active="Route::is('role.index')">{{ __('Roles')}}</x-nav-link>
                       <x-nav-link href="{{route('about')}}" :active="Route::is('about')">{{ __('About')}}</x-nav-link>
                     </div>
@@ -58,7 +58,7 @@
               <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
                 <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                 <x-nav-link href="{{route('scheduler')}}" :mobile="true" :active="Route::is('scheduler')">{{ __('Scheduler')}}</x-nav-link>
-                <x-nav-link href="{{route('witnesses')}}" :mobile="true" :active="Route::is('witnesses')">{{ __('Witnesses')}}</x-nav-link>
+                <x-nav-link href="{{route('witness.index')}}" :mobile="true" :active="Route::is('witness.index')">{{ __('Witnesses')}}</x-nav-link>
                 <x-nav-link href="{{route('role.index')}}" :mobile="true" :active="Route::is('role.index')">{{ __('Roles')}}</x-nav-link>
                 <x-nav-link href="{{route('about')}}" :mobile="true" :active="Route::is('about')">{{ __('About')}}</x-nav-link>
               </div>

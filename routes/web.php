@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\WitnessController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    return redirect('about');
     return view('welcome');
 });
 
@@ -16,8 +18,5 @@ Route::get('/scheduler', function () {
     return view('scheduler');
 })->name('scheduler');
 
-Route::get('/witnesses', function () {
-    return view('witnesses');
-})->name('witnesses');
-
 Route::resource('role', RoleController::class);
+Route::resource('witness', WitnessController::class);
