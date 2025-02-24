@@ -16,6 +16,7 @@ class StoreRoleRequest extends RoleRequest
         return [
             'name' => 'required|string|max:32|unique:roles,name',
             'priority' => 'integer|nullable',
+            'witnesses' => 'array|exists:witnesses,id',
         ];
     }
 }

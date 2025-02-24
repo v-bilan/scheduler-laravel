@@ -11,7 +11,7 @@ class Role extends Model
 
     public $timestamps = false;
 
-    public function witneses()
+    public function witnesses()
     {
         return $this->belongsToMany(Witness::class);
     }

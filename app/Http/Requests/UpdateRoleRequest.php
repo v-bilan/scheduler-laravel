@@ -15,6 +15,7 @@ class UpdateRoleRequest extends RoleRequest
         return [
             'name' => 'required|string|max:32|unique:roles,name,' . $this->route('role')->id,
             'priority' => 'integer|min:0',
+            'witnesses' => 'array|exists:witnesses,id',
         ];
     }
 }

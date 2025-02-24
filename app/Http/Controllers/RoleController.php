@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Role;
+use App\Models\Witness;
 
 class RoleController extends Controller
 {
@@ -13,7 +14,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::paginate(1);
+        $roles = Role::paginate(10);
         return view('roles.index', ['roles' => $roles]);
     }
 
@@ -22,7 +23,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('roles.create');
+        $witnesses = Witness::all();
+        return view('roles.create', ['witnesses' => $witnesses]);
     }
 
     /**
@@ -30,7 +32,9 @@ class RoleController extends Controller
      */
     public function store(StoreRoleRequest $request)
     {
-        Role::create($request->all());
+        $data = $request->validated();
+        $role = Role::create($data);
+        $role->witnesses()->attach($data['witnesses']);
 
         return redirect()->route('role.index')->with('success', 'Role was created!');
     }
@@ -48,7 +52,15 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        return view('roles.edit', ['role' => $role]);
+        $roleWitnesses = $role->witnesses->pluck('id')->toArray();
+
+        $witnesses = Witness::all();
+
+        return view('roles.edit', [
+            'role' => $role,
+            'roleWitnesses' => $roleWitnesses,
+            'witnesses' => $witnesses
+        ]);
     }
 
     /**
@@ -56,8 +68,9 @@ class RoleController extends Controller
      */
     public function update(UpdateRoleRequest $request, Role $role)
     {
-
-        $role->update($request->validated());
+        $data = $request->validated();
+        $role->update($data);
+        $role->witnesses()->sync($data['witnesses']);
 
         return redirect()->route('role.index')->with('success', __('Role updated successfully.'));
     }
