@@ -18,14 +18,35 @@
 
             <div class="mb-4">
                 <label class="block mb-2 font-medium" for="active">{{ __('Active') }}</label>
-                <select name="active" id="active" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-200">
-                    <option value="1" {{ old('active', $witness->active) == 1 ? 'selected' : '' }}>{{ __('Yes') }}</option>
-                    <option value="0" {{ old('active', $witness->active) == 0 ? 'selected' : '' }}>{{ __('No') }}</option>
+                <select name="active" id="active"
+                    class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-200">
+                    <option value="1" {{ old('active', $witness->active) == 1 ? 'selected' : '' }}>
+                        {{ __('Yes') }}</option>
+                    <option value="0" {{ old('active', $witness->active) == 0 ? 'selected' : '' }}>
+                        {{ __('No') }}</option>
                 </select>
                 @error('active')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                 @enderror
             </div>
+
+            <div class="mb-4">
+                <label class="block mb-2 font-medium" for="roles">{{ __('Roles') }}</label>
+                <select name="roles[]" id="roles"
+                    class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-200" multiple>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role->id }}"
+                            {{ in_array($role->id, old('roles', $witnessRoles)) ? 'selected' : '' }}>
+                            {{ $role->name }}
+                        </option>
+                    @endforeach
+
+                </select>
+                @error('roles')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
+            </div>
+
 
             <button type="submit" class="w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700">
                 {{ __('Update') }}

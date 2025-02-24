@@ -24,6 +24,7 @@ class WitnessRequest extends FormRequest
         return [
             'full_name' => 'required|string|max:64',
             'active' => 'integer',
+            'roles' => 'array|exists:roles,id',
         ];
     }
 

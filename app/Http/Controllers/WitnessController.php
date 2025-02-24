@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WitnessRequest;
+use App\Models\Role;
 use App\Models\Witness;
 
 class WitnessController extends Controller
@@ -21,7 +22,8 @@ class WitnessController extends Controller
      */
     public function create()
     {
-        return view('witness.create');
+        $roles = Role::all();
+        return view('witness.create', compact('roles'));
     }
 
     /**
@@ -29,7 +31,10 @@ class WitnessController extends Controller
      */
     public function store(WitnessRequest $request)
     {
-        Witness::create($request->validated());
+        $data = $request->validated();
+        $witness = Witness::create($data);
+        $witness->roles()->attach($data['roles']);
+
         return redirect()->route('witness.index')->with('success', 'Witness was created!');
     }
 
@@ -46,7 +51,9 @@ class WitnessController extends Controller
      */
     public function edit(witness $witness)
     {
-        return view('witness.edit', compact('witness'));
+        $roles = Role::all();
+        $witnessRoles = $witness->roles->pluck('id')->toArray();
+        return view('witness.edit', compact('witness', 'roles', 'witnessRoles'));
     }
 
     /**
@@ -54,7 +61,9 @@ class WitnessController extends Controller
      */
     public function update(WitnessRequest $request, witness $witness)
     {
-        $witness->update($request->validated());
+        $data = $request->validated();
+        $witness->update($data);
+        $witness->roles()->sync($data['roles']);
         return redirect()->route('witness.index')->with('success', 'Witness was updated!');
     }
 
