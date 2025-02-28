@@ -70,7 +70,7 @@ class RoleController extends Controller
     {
         $data = $request->validated();
         $role->update($data);
-        $role->witnesses()->sync($data['witnesses']);
+        $role->witnesses()->sync($data['witnesses'] ?? []);
 
         return redirect()->route('role.index')->with('success', __('Role updated successfully.'));
     }

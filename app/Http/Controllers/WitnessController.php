@@ -33,7 +33,7 @@ class WitnessController extends Controller
     {
         $data = $request->validated();
         $witness = Witness::create($data);
-        $witness->roles()->attach($data['roles']);
+        $witness->roles()->attach($data['roles'] ?? []);
 
         return redirect()->route('witness.index')->with('success', 'Witness was created!');
     }
