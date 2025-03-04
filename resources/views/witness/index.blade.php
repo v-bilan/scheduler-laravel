@@ -2,12 +2,6 @@
     <x-slot:title>Create Witness</x-slot:title>
     <div class="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-lg">
         <h2 class="text-2xl font-bold mb-4">{{ __('Witnesses List') }}</h2>
-
-        @if (session('success'))
-            <div class="p-4 mb-4 text-green-800 bg-green-100 rounded-lg">
-                {{ session('success') }}
-            </div>
-        @endif
         <div>
 
             <a href="{{ route('witness.create') }}"

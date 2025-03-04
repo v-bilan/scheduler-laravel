@@ -33,7 +33,7 @@
                     @endforeach
 
                 </select>
-                @error('roles')
+                @error('witnesses')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                 @enderror
             </div>
