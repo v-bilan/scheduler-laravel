@@ -4,17 +4,45 @@ namespace App\Services;
 
 use App\Models\Role;
 use App\Models\TaskWitnessDate;
+use App\Models\Witness;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\DB;
 
 class TaskManager
 {
     /**
      * Create a new class instance.
      */
-    public function __construct(private TasksParser $tasksParser)
+
+    private $witnessesByRole  = [];
+
+    public function __construct(private TasksParser $tasksParser) {}
+
+    private function getWitnessesByRole(string $role, $date)
     {
-        //
+        if (!isset($this->witnessesByRole[$role])) {
+            $this->witnessesByRole[$role] = DB::table('witnesses')->select([
+                'witnesses.full_name',
+                'roles.name as role_name',
+                'roles.id as role_id',
+                DB::raw('max(task_witness_date.date) as last_date')
+            ])
+                ->join('role_witness', 'witnesses.id', '=', 'role_witness.witness_id')
+                ->join('roles', 'role_witness.role_id', '=', 'roles.id')
+                ->leftJoin('task_witness_date', function (JoinClause $join) use ($date) {
+                    $join->on('witnesses.id', '=', 'task_witness_date.witness_id')
+                        ->on('roles.id', '=', 'task_witness_date.role_id')
+                        ->where('task_witness_date.date', '<', $date);
+                })
+                ->where('roles.name', '=', $role)
+                ->groupBy(['witnesses.full_name', 'roles.id', 'roles.name'])
+                ->orderBy('last_date')
+                ->get();
+        }
+
+
+        return $this->witnessesByRole[$role];
     }
-    private function get
 
     private function combine($rawTasks, $dbTasks): array
     {
@@ -32,18 +60,18 @@ class TaskManager
 
         $rawTasks = $this->getTasksDataFromTasks($this->tasksParser->getTasks($year, $week));
 
-        $dbTasks = TaskWitnessDate::with('witness')->where('date' , '=',  $date)->get();
+        $dbTasks = TaskWitnessDate::with('witness')->where('date', '=',  $date)->get();
 
         $roles = Role::orderBy('priority', 'DESC')->pluck('priority', 'name')->toArray();
 
         $result = $this->combine($rawTasks, $dbTasks);
 
-        foreach($result as &$task) {
+        foreach ($result as &$task) {
             $task['priority'] = $roles[$task['role']] ?? 0;
-            $task['witnesses'] = $this->getWitnessByRole($task['role'], $date);
+            $task['witnesses'] = $this->getWitnessesByRole($task['role'], $date);
         }
 
-
+        //dd($result);
         return $result;
     }
 
