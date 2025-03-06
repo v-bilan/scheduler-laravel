@@ -22,7 +22,12 @@ Route::get('sync', SyncController::class)->name('sync');
 Route::resource('role', RoleController::class);
 Route::resource('witness', WitnessController::class);
 
-Route::get('/task/{year?}/{week?}', [TaskController::class, 'index'])
+Route::get('/task/{year?}/{week?}', [TaskController::class, 'create'])
     ->where('year', '[0-9]+')
     ->where('week', '[0-9]+')
-    ->name('task.index');
+    ->name('task.create');
+
+Route::put('/task/{year?}/{week?}', [TaskController::class, 'store'])
+    ->where('year', '[0-9]+')
+    ->where('week', '[0-9]+')
+    ->name('task.store');

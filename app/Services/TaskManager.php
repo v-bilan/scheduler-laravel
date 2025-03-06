@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Date;
 use App\Models\Role;
 use App\Models\TaskWitnessDate;
 use App\Models\Witness;
@@ -16,12 +17,15 @@ class TaskManager
 
     private $witnessesByRole  = [];
 
+    private $userWitnesses = [];
+
     public function __construct(private TasksParser $tasksParser) {}
 
-    private function getWitnessesByRole(string $role, $date)
+    private function getWitnessesByRole(string $role, Date $date)
     {
         if (!isset($this->witnessesByRole[$role])) {
             $this->witnessesByRole[$role] = DB::table('witnesses')->select([
+                'witnesses.id as witness_id',
                 'witnesses.full_name',
                 'roles.name as role_name',
                 'roles.id as role_id',
@@ -35,25 +39,50 @@ class TaskManager
                         ->where('task_witness_date.date', '<', $date);
                 })
                 ->where('roles.name', '=', $role)
-                ->groupBy(['witnesses.full_name', 'roles.id', 'roles.name'])
+                ->where('witnesses.active', '=', 1)
+                ->groupBy(['witnesses.full_name', 'roles.id', 'roles.name', 'witnesses.id'])
                 ->orderBy('last_date')
-                ->get();
+                ->get()
+                ;
         }
 
 
         return $this->witnessesByRole[$role];
     }
 
+    public function createSchedule(array $witnesses, Date $date)
+    {
+        $tasks = $this->getTasksData($date, false);
+        try{
+            DB::beginTransaction();
+            TaskWitnessDate::where('date', '=', $date)->delete();
+            foreach ($tasks as $taskName => $taskData) {
+                TaskWitnessDate::create([
+                    'role_id' => $taskData['role_id'],
+                    'task' => $taskName,
+                    'witness_id' => $witnesses[$taskName],
+                    'date' => $date
+                ]);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            report($e);
+            DB::rollBack();
+            return false;
+        }
+        return true;
+    }
+
     private function combine($rawTasks, $dbTasks): array
     {
         foreach ($dbTasks as $task) {
-            $rawTasks[$task->task]['witness'] = $task->witness->full_name;
+            $rawTasks[$task->task]['witness'] = $task->witness;
         }
         return $rawTasks;
     }
 
 
-    public function getTasksData($date): array
+    public function getTasksData(Date $date, $withWitnesses = true): array
     {
         $year = $date->getFullYear();
         $week = $date->getWeek();
@@ -62,17 +91,35 @@ class TaskManager
 
         $dbTasks = TaskWitnessDate::with('witness')->where('date', '=',  $date)->get();
 
-        $roles = Role::orderBy('priority', 'DESC')->pluck('priority', 'name')->toArray();
+        $roles = Role::orderBy('priority', 'DESC')->get()->keyBy('name')->toArray();
 
-        $result = $this->combine($rawTasks, $dbTasks);
+        $tasks = $this->combine($rawTasks, $dbTasks);
 
-        foreach ($result as &$task) {
-            $task['priority'] = $roles[$task['role']] ?? 0;
-            $task['witnesses'] = $this->getWitnessesByRole($task['role'], $date);
+
+        $number=1;
+
+        foreach ($tasks as &$task) {
+            $task['number'] = $number++;
+            $task['priority'] = $roles[$task['role']]['priority'] ?? 0;
+            $task['role_id'] = $roles[$task['role']]['id'] ?? 0;
         }
 
-        //dd($result);
-        return $result;
+        if ($withWitnesses) {
+            uasort($tasks, fn ($a, $b) => $a['priority'] < $b['priority']);
+
+            $this->userWitnesses = [];
+            foreach ($tasks as &$task) {
+                $task['witnesses'] = $this->getWitnessesByRole($task['role'], $date);
+                //if (isset($task['witness'])) continue;
+                $task['suggested_witness'] = $this->getNexWitnessByRole($task['role'], $date)->current();
+
+            }
+
+
+            uasort($tasks, fn ($a, $b) => $a['number'] > $b['number']);
+        }
+
+        return $tasks;
     }
 
     public function getDateString(int $year, int $week)
@@ -109,6 +156,16 @@ class TaskManager
         ];
 
         return $result;
+    }
+
+    private function getNexWitnessByRole(string $role, $date)
+    {
+        $witnesses = $this->getWitnessesByRole($role, $date);
+        foreach($witnesses as $witness) {
+            if (isset($this->userWitnesses[$witness->witness_id])) continue;
+            $this->userWitnesses[$witness->witness_id] = $witness->witness_id;
+            yield $witness;
+        }
     }
 
     private function getRoleNameByTaskName(string $taskName): string
