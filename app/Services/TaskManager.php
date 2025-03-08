@@ -16,15 +16,24 @@ class TaskManager
      */
 
     private $witnessesByRole  = [];
+    private $witnessesByRoleSorted  = [];
 
-    private $userWitnesses = [];
+    private $usedWitnesses = [];
 
     public function __construct(private TasksParser $tasksParser) {}
 
+    private function getWitnessesByRoleSorted(string $role, Date $date)
+    {
+        if (!isset($this->witnessesByRoleSorted[$date->__toString()][$role])){
+            $this->witnessesByRoleSorted[$date->__toString()][$role] = $this->getWitnessesByRole($role, $date)->toArray();
+            uasort($this->witnessesByRoleSorted[$date->__toString()][$role], fn ($a, $b) => $a->full_name > $b->full_name);
+        }
+        return $this->witnessesByRoleSorted[$date->__toString()][$role];
+    }
     private function getWitnessesByRole(string $role, Date $date)
     {
-        if (!isset($this->witnessesByRole[$role])) {
-            $this->witnessesByRole[$role] = DB::table('witnesses')->select([
+        if (!isset($this->witnessesByRole[$date->__toString()][$role])) {
+            $this->witnessesByRole[$date->__toString()][$role] = DB::table('witnesses')->select([
                 'witnesses.id as witness_id',
                 'witnesses.full_name',
                 'roles.name as role_name',
@@ -47,7 +56,7 @@ class TaskManager
         }
 
 
-        return $this->witnessesByRole[$role];
+        return $this->witnessesByRole[$date->__toString()][$role];
     }
 
     public function createSchedule(array $witnesses, Date $date)
@@ -107,9 +116,10 @@ class TaskManager
         if ($withWitnesses) {
             uasort($tasks, fn ($a, $b) => $a['priority'] < $b['priority']);
 
-            $this->userWitnesses = [];
+            $this->usedWitnesses[$date->__toString()] = [];
             foreach ($tasks as &$task) {
-                $task['witnesses'] = $this->getWitnessesByRole($task['role'], $date);
+
+                $task['witnesses'] = $this->getWitnessesByRoleSorted($task['role'], $date);
                 //if (isset($task['witness'])) continue;
                 $task['suggested_witness'] = $this->getNexWitnessByRole($task['role'], $date)->current();
 
@@ -158,12 +168,12 @@ class TaskManager
         return $result;
     }
 
-    private function getNexWitnessByRole(string $role, $date)
+    private function getNexWitnessByRole(string $role,  Date $date)
     {
         $witnesses = $this->getWitnessesByRole($role, $date);
         foreach($witnesses as $witness) {
-            if (isset($this->userWitnesses[$witness->witness_id])) continue;
-            $this->userWitnesses[$witness->witness_id] = $witness->witness_id;
+            if (isset($this->usedWitnesses[$date->__toString()][$witness->witness_id])) continue;
+            $this->usedWitnesses[$date->__toString()][$witness->witness_id] = $witness->witness_id;
             yield $witness;
         }
     }

@@ -13,7 +13,7 @@ class WitnessController extends Controller
      */
     public function index()
     {
-        $witnesses = Witness::paginate(10);
+        $witnesses = Witness::orderBy('full_name')->paginate(10);
         return view('witness.index', ['witnesses' => $witnesses]);
     }
 
