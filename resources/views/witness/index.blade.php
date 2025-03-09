@@ -14,36 +14,34 @@
             </a>
         </div>
 
-        <table class="w-full table-auto border-collapse">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="p-2">{{ __('ID') }}</th>
-                    <th class="p-2">{{ __('Full Name') }}</th>
-                    <th class="p-2">{{ __('Active') }}</th>
-                    <th class="p-2">{{ __('Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($witnesses as $witness)
-                    <tr class="border-t">
-                        <td class="p-2">{{ $witness->id }}</td>
-                        <td class="p-2">{{ $witness->full_name }}</td>
-                        <td class="p-2">{{ $witness->active ? __('Yes') : __('No') }}</td>
-                        <td class="p-2">
-                            <a href="{{ route('witness.edit', $witness->id) }}"
-                                class="text-blue-600 hover:underline">{{ __('Edit') }}</a>
-                            <form action="{{ route('witness.destroy', $witness->id) }}" method="POST"
-                                class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="text-red-600 hover:underline">{{ __('Delete') }}</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <x-table>
+            <x-slot:header>
+                <x-table.tr class="bg-gray-100">
+                    <x-table.th>{{ __('ID') }}</x-table.th>
+                    <x-table.th>{{ __('Full Name') }}</x-table.th>
+                    <x-table.th>{{ __('Active') }}</x-table.th>
+                    <x-table.th>{{ __('Actions') }}</x-table.th>
+                </x-table.tr>
+
+            </x-slot:header>
+            @foreach ($witnesses as $witness)
+                <x-table.tr class="border-t">
+                    <x-table.td>{{ $witness->id }}</x-table.td>
+                    <x-table.td>{{ $witness->full_name }}</x-table.td>
+                    <x-table.td>{{ $witness->active ? __('Yes') : __('No') }}</x-table.td>
+                    <x-table.td>
+                        <a href="{{ route('witness.edit', $witness->id) }}"
+                            class="text-blue-600 hover:underline">{{ __('Edit') }}</a>
+                        <form action="{{ route('witness.destroy', $witness->id) }}" method="POST"
+                            class="inline-block">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:underline">{{ __('Delete') }}</button>
+                        </form>
+                    </x-table.td>
+                </x-table.tr>
+            @endforeach
+        </x-table>
 
         <div class="mt-4">
             {{ $witnesses->links() }}

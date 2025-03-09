@@ -15,37 +15,36 @@
             </a>
         </div>
 
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-300 p-2">{{ __('ID') }}</th>
-                    <th class="border border-gray-300 p-2">{{ __('Role Name') }}</th>
-                    <th class="border border-gray-300 p-2">{{ __('Priority') }}</th>
-                    <th class="border border-gray-300 p-2">{{ __('Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($roles as $role)
-                    <tr class="text-center">
-                        <td class="border border-gray-300 p-2">{{ $role->id }}</td>
-                        <td class="border border-gray-300 p-2">{{ $role->name }}</td>
-                        <td class="border border-gray-300 p-2">{{ $role->priority }}</td>
-                        <td class="border border-gray-300 p-2 space-x-2">
-                            <a href="{{ route('role.edit', $role->id) }}"
-                                class="text-blue-600 hover:underline">{{ __('Edit') }}</a>
-                            <form action="{{ route('role.destroy', $role->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline"
-                                    onclick="return confirm('{{ __('Are you sure?') }}')">
-                                    {{ __('Delete') }}
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <x-table>
+            <x-slot:header>
+                <x-table.tr class="bg-gray-100">
+                    <x-table.th>{{ __('ID') }}</x-table.th>
+                    <x-table.th>{{ __('Role Name') }}</x-table.th>
+                    <x-table.th>{{ __('Priority') }}</x-table.th>
+                    <x-table.th>{{ __('Actions') }}</x-table.th>
+                </x-table.tr>
+            </x-slot:header>
+
+            @foreach ($roles as $role)
+                <x-table.tr class="border-t">
+                    <x-table.td>{{ $role->id }}</x-table.td>
+                    <x-table.td>{{ $role->name }}</x-table.td>
+                    <x-table.td>{{ $role->priority }}</x-table.td>
+                    <x-table.td>
+                        <a href="{{ route('role.edit', $role->id) }}"
+                            class="text-blue-600 hover:underline">{{ __('Edit') }}</a>
+                        <form action="{{ route('role.destroy', $role->id) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:underline"
+                                onclick="return confirm('{{ __('Are you sure?') }}')">
+                                {{ __('Delete') }}
+                            </button>
+                        </form>
+                    </x-table.td>
+                </x-table.tr>
+            @endforeach
+        </x-table>
 
         <div class="mt-4">
             {{ $roles->links() }}
