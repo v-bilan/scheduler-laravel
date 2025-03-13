@@ -2,19 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\Sortable;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Role;
 use App\Models\Witness;
+use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
+    use Sortable;
     /**
      * Display a listing of the resource.
      */
+    protected $sortable = ['name', 'priority', 'id'];
+
+
     public function index()
     {
-        $roles = Role::orderBy('name')->paginate(10);
+
+
+        $roles = Role::orderBy($this->getOrderBy('name'), $this->getOrderDir())
+            ->paginate(10);
         return view('roles.index', ['roles' => $roles]);
     }
 

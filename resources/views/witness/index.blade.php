@@ -17,9 +17,9 @@
         <x-table>
             <x-slot:header>
                 <x-table.tr class="bg-gray-100">
-                    <x-table.th>{{ __('ID') }}</x-table.th>
-                    <x-table.th>{{ __('Full Name') }}</x-table.th>
-                    <x-table.th>{{ __('Active') }}</x-table.th>
+                    <x-table.th orderBy="id">{{ __('ID') }}</x-table.th>
+                    <x-table.th orderBy="full_name">{{ __('Full Name') }}</x-table.th>
+                    <x-table.th orderBy="active">{{ __('Active') }}</x-table.th>
                     <x-table.th>{{ __('Actions') }}</x-table.th>
                 </x-table.tr>
 

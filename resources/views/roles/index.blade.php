@@ -18,9 +18,9 @@
         <x-table>
             <x-slot:header>
                 <x-table.tr class="bg-gray-100">
-                    <x-table.th>{{ __('ID') }}</x-table.th>
-                    <x-table.th>{{ __('Role Name') }}</x-table.th>
-                    <x-table.th>{{ __('Priority') }}</x-table.th>
+                    <x-table.th orderBy="id">{{ __('ID') }}</x-table.th>
+                    <x-table.th orderBy="name">{{ __('Role Name') }}</x-table.th>
+                    <x-table.th orderBy="priority">{{ __('Priority') }}</x-table.th>
                     <x-table.th>{{ __('Actions') }}</x-table.th>
                 </x-table.tr>
             </x-slot:header>

@@ -2,18 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\Sortable;
 use App\Http\Requests\WitnessRequest;
 use App\Models\Role;
 use App\Models\Witness;
 
 class WitnessController extends Controller
 {
+    use Sortable;
+
+    protected $sortable = ['full_name', 'active', 'id'];
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $witnesses = Witness::orderBy('full_name')->paginate(10);
+        $witnesses = Witness::orderBy($this->getOrderBy('full_name'), $this->getOrderDir())->paginate(10);
         return view('witness.index', ['witnesses' => $witnesses]);
     }
 
