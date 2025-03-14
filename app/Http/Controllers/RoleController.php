@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
+
     use Sortable;
     /**
      * Display a listing of the resource.
@@ -21,9 +22,8 @@ class RoleController extends Controller
     public function index()
     {
 
+        $roles = $this->getItems(Role::class, 'name');
 
-        $roles = Role::orderBy($this->getOrderBy('name'), $this->getOrderDir())
-            ->paginate(10);
         return view('roles.index', ['roles' => $roles]);
     }
 

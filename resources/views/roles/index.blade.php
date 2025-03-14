@@ -4,15 +4,12 @@
         <h2 class="text-xl font-bold mb-4">{{ __('Roles List') }}</h2>
 
 
-        <div>
+        <div class="flex justify-between">
             <a href="{{ route('role.create') }}"
                 class="mb-4 inline-block bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
                 {{ __('Create New Role') }}
             </a>
-            <a href="{{ route('sync') }}"
-                class="mt-4 inline-block bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
-                {{ __('Synchonize') }}
-            </a>
+            <x-filter name="name" />
         </div>
 
         <x-table>

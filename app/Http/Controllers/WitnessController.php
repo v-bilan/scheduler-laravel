@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Traits\Filtrable;
 use App\Http\Controllers\Traits\Sortable;
 use App\Http\Requests\WitnessRequest;
 use App\Models\Role;
@@ -17,7 +18,7 @@ class WitnessController extends Controller
      */
     public function index()
     {
-        $witnesses = Witness::orderBy($this->getOrderBy('full_name'), $this->getOrderDir())->paginate(10);
+        $witnesses = $this->getItems(Witness::class, 'full_name');
         return view('witness.index', ['witnesses' => $witnesses]);
     }
 
