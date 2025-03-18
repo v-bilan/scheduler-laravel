@@ -21,8 +21,10 @@ class TaskWitnessDateResource extends JsonResource
                 'id' => $this->id,
                 'date' => $this->date,
                 'task' => $this->task,
-                'roleId' => 'role_id',
-                'witnessId' => 'witness_id'
+            ],
+            'includes' => [
+                (object) ['type' => 'role', 'id' => $this->role_id],
+                (object) ['type' => 'witness', 'id' => $this->witness_id]
             ],
             'links' => [
                 'self' => route('api.task-witness-date.show', ['task_witness_date' => $this->id])

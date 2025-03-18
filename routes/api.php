@@ -15,7 +15,9 @@ Route::prefix('v1')->name('api.')->group(
         Route::apiResource('witness', WitnessController::class)->except(['store', 'update', 'destroy']);
         Route::apiResource('task-witness-date', TaskWitnessDateController::class)->except(['store', 'update', 'destroy']);
     }
-)->except(['store', 'update', 'destroy']);
+);
+
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
